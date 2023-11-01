@@ -1,0 +1,45 @@
+From 67e9706f32aa28ec91467d694c72055e3cfe709c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Fri, 21 Jan 2022 08:49:04 +0100
+Subject: [PATCH 33/36] rtw89: 8852a: correct bit definition of dfs_en
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: http://bugzilla.redhat.com/2033291
+
+commit 5f48d7bbec3775c9388c91c6920a64076f7ae339
+Author: Chung-Hsuan Hung <hsuan8331@realtek.com>
+Date:   Tue Dec 21 10:48:00 2021 +0800
+
+    rtw89: 8852a: correct bit definition of dfs_en
+
+    Since there are other protections in the set channel flow, fortunately old
+    wrong setting won't affect the performance.
+
+    Signed-off-by: Chung-Hsuan Hung <hsuan8331@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20211221024800.23814-1-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/reg.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/reg.h b/drivers/net/wireless/realtek/rtw89/reg.h
+index b6049009f183..e0a416d37d0e 100644
+--- a/drivers/net/wireless/realtek/rtw89/reg.h
++++ b/drivers/net/wireless/realtek/rtw89/reg.h
+@@ -1658,7 +1658,7 @@
+ #define R_RSTB_WATCH_DOG 0x000C
+ #define B_P0_RSTB_WATCH_DOG BIT(0)
+ #define B_P1_RSTB_WATCH_DOG BIT(1)
+-#define B_UPD_P0_EN BIT(30)
++#define B_UPD_P0_EN BIT(31)
+ #define R_ANAPAR_PW15 0x030C
+ #define B_ANAPAR_PW15 GENMASK(31, 24)
+ #define B_ANAPAR_PW15_H GENMASK(27, 24)
+-- 
+2.13.6
+

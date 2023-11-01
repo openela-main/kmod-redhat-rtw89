@@ -1,0 +1,50 @@
+From 3880474c7442b138b17f8009b8a40037bbaf484c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Fri, 21 Jan 2022 08:49:04 +0100
+Subject: [PATCH 31/36] rtw89: coex: Cancel PS leaving while C2H comes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: http://bugzilla.redhat.com/2033291
+
+commit bd309c8b4965b67917d8828c97d1b6741377cb8e
+Author: Ching-Te Ku <ku920601@realtek.com>
+Date:   Thu Dec 9 16:32:28 2021 +0800
+
+    rtw89: coex: Cancel PS leaving while C2H comes
+
+    It's unnecessary to leave WL PS while C2H comes.
+
+    Signed-off-by: Ching-Te Ku <ku920601@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20211209083229.10815-7-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/coex.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/coex.c b/drivers/net/wireless/realtek/rtw89/coex.c
+index 929818c3a776..9f7d4f8d0c56 100644
+--- a/drivers/net/wireless/realtek/rtw89/coex.c
++++ b/drivers/net/wireless/realtek/rtw89/coex.c
+@@ -4553,14 +4553,12 @@ void rtw89_btc_c2h_handle(struct rtw89_dev *rtwdev, struct sk_buff *skb,
+ 		rtw89_debug(rtwdev, RTW89_DBG_BTC,
+ 			    "[BTC], handle C2H BT INFO with data %8ph\n", buf);
+ 		btc->cx.cnt_bt[BTC_BCNT_INFOUPDATE]++;
+-		rtw89_leave_ps_mode(rtwdev);
+ 		_update_bt_info(rtwdev, buf, len);
+ 		break;
+ 	case BTF_EVNT_BT_SCBD:
+ 		rtw89_debug(rtwdev, RTW89_DBG_BTC,
+ 			    "[BTC], handle C2H BT SCBD with data %8ph\n", buf);
+ 		btc->cx.cnt_bt[BTC_BCNT_SCBDUPDATE]++;
+-		rtw89_leave_ps_mode(rtwdev);
+ 		_update_bt_scbd(rtwdev, false);
+ 		break;
+ 	case BTF_EVNT_BT_PSD:
+-- 
+2.13.6
+

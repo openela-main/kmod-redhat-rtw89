@@ -1,0 +1,19 @@
+Index: src/drivers/net/wireless/realtek/rtw89/rtw8852a.c
+===================================================================
+--- src.orig/drivers/net/wireless/realtek/rtw89/rtw8852a.c	2022-02-01 03:51:01.506584795 +0100
++++ src/drivers/net/wireless/realtek/rtw89/rtw8852a.c	2022-02-01 15:55:44.165428825 +0100
+@@ -2000,7 +2000,7 @@
+ const struct rtw89_chip_info rtw8852a_chip_info = {
+ 	.chip_id		= RTL8852A,
+ 	.ops			= &rtw8852a_chip_ops,
+-	.fw_name		= "rtw89/rtw8852a_fw.bin",
++	.fw_name		= "rtw89/rtw8852a_fw_dup85.bin",
+ 	.fifo_size		= 458752,
+ 	.max_amsdu_limit	= 3500,
+ 	.dis_2g_40m_ul_ofdma	= true,
+@@ -2054,4 +2054,4 @@
+ };
+ EXPORT_SYMBOL(rtw8852a_chip_info);
+ 
+-MODULE_FIRMWARE("rtw89/rtw8852a_fw.bin");
++MODULE_FIRMWARE("rtw89/rtw8852a_fw_dup85.bin");

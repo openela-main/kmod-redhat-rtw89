@@ -1,0 +1,45 @@
+From a0606ee9846a9c9937a46717b18440cf6bad87f8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Fri, 21 Jan 2022 08:49:04 +0100
+Subject: [PATCH 26/36] rtw89: coex: correct C2H header length
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: http://bugzilla.redhat.com/2033291
+
+commit b3131a41ac6fcda0a636b3c7d1e05914107d8840
+Author: Ching-Te Ku <ku920601@realtek.com>
+Date:   Thu Dec 9 16:32:23 2021 +0800
+
+    rtw89: coex: correct C2H header length
+
+    To resolve C2H handle length mismatch, or it will parse the c2h content
+    out of array.
+
+    Signed-off-by: Ching-Te Ku <ku920601@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20211209083229.10815-2-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/coex.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/coex.c b/drivers/net/wireless/realtek/rtw89/coex.c
+index abe4b6549ab2..f220229a7a48 100644
+--- a/drivers/net/wireless/realtek/rtw89/coex.c
++++ b/drivers/net/wireless/realtek/rtw89/coex.c
+@@ -4494,6 +4494,8 @@ void rtw89_btc_c2h_handle(struct rtw89_dev *rtwdev, struct sk_buff *skb,
+ 	struct rtw89_btc_btf_fwinfo *pfwinfo = &btc->fwinfo;
+ 	u8 *buf = &skb->data[RTW89_C2H_HEADER_LEN];
+ 
++	len -= RTW89_C2H_HEADER_LEN;
++
+ 	rtw89_debug(rtwdev, RTW89_DBG_BTC,
+ 		    "[BTC], %s(): C2H BT len:%d class:%d fun:%d\n",
+ 		    __func__, len, class, func);
+-- 
+2.13.6
+

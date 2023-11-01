@@ -1,0 +1,46 @@
+From db7fb65e5b6e99616d6f1a327eba6663dc2ca6a4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Fri, 21 Jan 2022 08:49:02 +0100
+Subject: [PATCH 08/36] rtw89: fix return value in hfc_pub_cfg_chk
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: http://bugzilla.redhat.com/2033291
+
+commit c6477cb237048725922f6a786f68b5232abb418f
+Author: Kevin Lo <kevlo@kevlo.org>
+Date:   Thu Oct 21 14:32:27 2021 +0800
+
+    rtw89: fix return value in hfc_pub_cfg_chk
+
+    It seems to me when pub_cfg->grp0 + pub_cfg->grp1 != pub_cfg->pub_max is true,
+    it should return -EFAULT rather than 0.  Otherwise, the function doesn't need
+    to exist.
+
+    Signed-off-by: Kevin Lo <kevlo@kevlo.org>
+    Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+    Link: https://lore.kernel.org/r/YXEJey8lKksAZif4@ns.kevlo.org
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/mac.c b/drivers/net/wireless/realtek/rtw89/mac.c
+index 69384c43c046..afcd07ab1de7 100644
+--- a/drivers/net/wireless/realtek/rtw89/mac.c
++++ b/drivers/net/wireless/realtek/rtw89/mac.c
+@@ -560,7 +560,7 @@ static int hfc_pub_cfg_chk(struct rtw89_dev *rtwdev)
+ 	const struct rtw89_hfc_pub_cfg *pub_cfg = &param->pub_cfg;
+ 
+ 	if (pub_cfg->grp0 + pub_cfg->grp1 != pub_cfg->pub_max)
+-		return 0;
++		return -EFAULT;
+ 
+ 	return 0;
+ }
+-- 
+2.13.6
+
