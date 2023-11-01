@@ -1,0 +1,48 @@
+From a68c9e193637392a65e94d6ff223bea35b8b705c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:37 +0200
+Subject: [PATCH 118/142] wifi: rtw89: coex: Set Bluetooth background scan PTA
+ request priority
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 6d2a479c1f9e957908d0fc9d56b9831a48f5ce80
+Author: Ching-Te Ku <ku920601@realtek.com>
+Date:   Tue Jan 17 19:41:06 2023 +0800
+
+    wifi: rtw89: coex: Set Bluetooth background scan PTA request priority
+
+    When Wi-Fi is RX, set Bluetooth background scan to low-priority and
+    not to break Wi-Fi packet. Bluetooth can RX depend on hardware ability
+    even RX request has been rejected. This way can improve Wi-Fi RX
+    throughput performance.
+
+    Signed-off-by: Ching-Te Ku <ku920601@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20230117114109.4298-6-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/coex.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/coex.c b/drivers/net/wireless/realtek/rtw89/coex.c
+index 33f369e4ff4cf..bfeef1069318c 100644
+--- a/drivers/net/wireless/realtek/rtw89/coex.c
++++ b/drivers/net/wireless/realtek/rtw89/coex.c
+@@ -4763,6 +4763,8 @@ void _run_coex(struct rtw89_dev *rtwdev, enum btc_reason_and_action reason)
+ 		_action_wl_nc(rtwdev);
+ 		break;
+ 	case BTC_WLINK_2G_STA:
++		if (wl->status.map.traffic_dir & BIT(RTW89_TFC_DL))
++			bt->scan_rx_low_pri = true;
+ 		_action_wl_2g_sta(rtwdev);
+ 		break;
+ 	case BTC_WLINK_2G_AP:
+-- 
+2.13.6
+

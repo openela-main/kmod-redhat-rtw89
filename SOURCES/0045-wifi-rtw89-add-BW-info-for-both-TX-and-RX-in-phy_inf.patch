@@ -1,0 +1,79 @@
+From 8486f00b56da2f777031732bad52a3e68f308720 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:27 +0200
+Subject: [PATCH 045/142] wifi: rtw89: add BW info for both TX and RX in
+ phy_info
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 25f49617b5c9c9afa829030f14606be6351d4771
+Author: Eric Huang <echuang@realtek.com>
+Date:   Fri Oct 21 17:16:01 2022 +0800
+
+    wifi: rtw89: add BW info for both TX and RX in phy_info
+
+    In order to debug performance issue intuitively, add bandwidth information
+    into debugfs entry phy_info. After applying this patch, it looks like:
+
+     TX rate [0]: HE 2SS MCS-11 GI:0.8 BW:80 (hw_rate=0x19b) ==> agg_wait=1 (3500)
+     RX rate [0]: HE 2SS MCS-9 GI:0.8 BW:80  (hw_rate=0x199)
+
+    Signed-off-by: Eric Huang <echuang@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20221021091601.39884-1-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/debug.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/debug.c b/drivers/net/wireless/realtek/rtw89/debug.c
+index 8f27c883eeabb..cd44d9aa37ca0 100644
+--- a/drivers/net/wireless/realtek/rtw89/debug.c
++++ b/drivers/net/wireless/realtek/rtw89/debug.c
+@@ -51,6 +51,22 @@ struct rtw89_debugfs_priv {
+ 	};
+ };
+ 
++static const u16 rtw89_rate_info_bw_to_mhz_map[] = {
++	[RATE_INFO_BW_20] = 20,
++	[RATE_INFO_BW_40] = 40,
++	[RATE_INFO_BW_80] = 80,
++	[RATE_INFO_BW_160] = 160,
++	[RATE_INFO_BW_320] = 320,
++};
++
++static u16 rtw89_rate_info_bw_to_mhz(enum rate_info_bw bw)
++{
++	if (bw < ARRAY_SIZE(rtw89_rate_info_bw_to_mhz_map))
++		return rtw89_rate_info_bw_to_mhz_map[bw];
++
++	return 0;
++}
++
+ static int rtw89_debugfs_single_show(struct seq_file *m, void *v)
+ {
+ 	struct rtw89_debugfs_priv *debugfs_priv = m->private;
+@@ -2379,6 +2395,7 @@ static void rtw89_sta_info_get_iter(void *data, struct ieee80211_sta *sta)
+ 	else
+ 		seq_printf(m, "Legacy %d", rate->legacy);
+ 	seq_printf(m, "%s", rtwsta->ra_report.might_fallback_legacy ? " FB_G" : "");
++	seq_printf(m, " BW:%u", rtw89_rate_info_bw_to_mhz(rate->bw));
+ 	seq_printf(m, "\t(hw_rate=0x%x)", rtwsta->ra_report.hw_rate);
+ 	seq_printf(m, "\t==> agg_wait=%d (%d)\n", rtwsta->max_agg_wait,
+ 		   sta->deflink.agg.max_rc_amsdu_len);
+@@ -2404,6 +2421,7 @@ static void rtw89_sta_info_get_iter(void *data, struct ieee80211_sta *sta)
+ 			   he_gi_str[rate->he_gi] : "N/A");
+ 		break;
+ 	}
++	seq_printf(m, " BW:%u", rtw89_rate_info_bw_to_mhz(status->bw));
+ 	seq_printf(m, "\t(hw_rate=0x%x)\n", rtwsta->rx_hw_rate);
+ 
+ 	rssi = ewma_rssi_read(&rtwsta->avg_rssi);
+-- 
+2.13.6
+

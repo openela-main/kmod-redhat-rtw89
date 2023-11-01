@@ -1,0 +1,47 @@
+From 90bb28c3e1f5b2fb8b203e8ba91efe551b322492 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:36 +0200
+Subject: [PATCH 106/142] wifi: rtw89: coex: Change RTL8852B use v1 TDMA policy
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 447a3267cbed55963bcd146ddebc72429b630dbf
+Author: Ching-Te Ku <ku920601@realtek.com>
+Date:   Fri Jan 6 20:08:43 2023 +0800
+
+    wifi: rtw89: coex: Change RTL8852B use v1 TDMA policy
+
+    RTL8852B support the new features like TDMA instant (Change TDMA mechanism
+    immediately), Co-RX feature (Wi-Fi/Bluetooth can RX in the same time) and
+    so on. The v1 TDMA policy will enable those newer mechanism. It will have
+    a better coexistence performance.
+
+    Signed-off-by: Ching-Te Ku <ku920601@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20230106120844.17441-7-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/rtw8852b.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/rtw8852b.c b/drivers/net/wireless/realtek/rtw89/rtw8852b.c
+index b9e5363e524b3..e0f6dfe31bddd 100644
+--- a/drivers/net/wireless/realtek/rtw89/rtw8852b.c
++++ b/drivers/net/wireless/realtek/rtw89/rtw8852b.c
+@@ -2423,7 +2423,7 @@ static const struct rtw89_chip_ops rtw8852b_chip_ops = {
+ 	.btc_update_bt_cnt	= rtw8852b_btc_update_bt_cnt,
+ 	.btc_wl_s1_standby	= rtw8852b_btc_wl_s1_standby,
+ 	.btc_set_wl_rx_gain	= rtw8852b_btc_set_wl_rx_gain,
+-	.btc_set_policy		= rtw89_btc_set_policy,
++	.btc_set_policy		= rtw89_btc_set_policy_v1,
+ };
+ 
+ const struct rtw89_chip_info rtw8852b_chip_info = {
+-- 
+2.13.6
+

@@ -1,0 +1,90 @@
+From 43ad0f51d78b5ddca2f7e7ae3251d6fa70a5c90c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:40 +0200
+Subject: [PATCH 139/142] wifi: rtw89: phy: set TX power according to RF path
+ number by chip
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit ddf9a2ead1676db46abe8acca3f689fd572a44d1
+Author: Zong-Zhe Yang <kevin_yang@realtek.com>
+Date:   Fri Feb 3 14:51:57 2023 +0800
+
+    wifi: rtw89: phy: set TX power according to RF path number by chip
+
+    Previously, all supported chips had two RF paths. Therefore, these
+    codes used static number for TX power setting. Now, we are planning
+    to support a new chip which has only one RF path. So, we refine the
+    setting codes to refer to chip's RF path number at runtime.
+
+    Signed-off-by: Zong-Zhe Yang <kevin_yang@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20230203065157.8227-1-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/phy.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/phy.c b/drivers/net/wireless/realtek/rtw89/phy.c
+index ca2b5c17d6da0..d9f61ba3d1765 100644
+--- a/drivers/net/wireless/realtek/rtw89/phy.c
++++ b/drivers/net/wireless/realtek/rtw89/phy.c
+@@ -2042,6 +2042,7 @@ void rtw89_phy_set_txpwr_byrate(struct rtw89_dev *rtwdev,
+ 				const struct rtw89_chan *chan,
+ 				enum rtw89_phy_idx phy_idx)
+ {
++	u8 max_nss_num = rtwdev->chip->rf_path_num;
+ 	static const u8 rs[] = {
+ 		RTW89_RS_CCK,
+ 		RTW89_RS_OFDM,
+@@ -2064,7 +2065,7 @@ void rtw89_phy_set_txpwr_byrate(struct rtw89_dev *rtwdev,
+ 	BUILD_BUG_ON(rtw89_rs_idx_max[RTW89_RS_HEDCM] % 4);
+ 
+ 	addr = R_AX_PWR_BY_RATE;
+-	for (cur.nss = 0; cur.nss <= RTW89_NSS_2; cur.nss++) {
++	for (cur.nss = 0; cur.nss < max_nss_num; cur.nss++) {
+ 		for (i = 0; i < ARRAY_SIZE(rs); i++) {
+ 			if (cur.nss >= rtw89_rs_nss_max[rs[i]])
+ 				continue;
+@@ -2127,6 +2128,7 @@ void rtw89_phy_set_txpwr_limit(struct rtw89_dev *rtwdev,
+ 			       const struct rtw89_chan *chan,
+ 			       enum rtw89_phy_idx phy_idx)
+ {
++	u8 max_ntx_num = rtwdev->chip->rf_path_num;
+ 	struct rtw89_txpwr_limit lmt;
+ 	u8 ch = chan->channel;
+ 	u8 bw = chan->band_width;
+@@ -2141,7 +2143,7 @@ void rtw89_phy_set_txpwr_limit(struct rtw89_dev *rtwdev,
+ 		     RTW89_TXPWR_LMT_PAGE_SIZE);
+ 
+ 	addr = R_AX_PWR_LMT;
+-	for (i = 0; i < RTW89_NTX_NUM; i++) {
++	for (i = 0; i < max_ntx_num; i++) {
+ 		rtw89_phy_fill_txpwr_limit(rtwdev, chan, &lmt, i);
+ 
+ 		ptr = (s8 *)&lmt;
+@@ -2162,6 +2164,7 @@ void rtw89_phy_set_txpwr_limit_ru(struct rtw89_dev *rtwdev,
+ 				  const struct rtw89_chan *chan,
+ 				  enum rtw89_phy_idx phy_idx)
+ {
++	u8 max_ntx_num = rtwdev->chip->rf_path_num;
+ 	struct rtw89_txpwr_limit_ru lmt_ru;
+ 	u8 ch = chan->channel;
+ 	u8 bw = chan->band_width;
+@@ -2176,7 +2179,7 @@ void rtw89_phy_set_txpwr_limit_ru(struct rtw89_dev *rtwdev,
+ 		     RTW89_TXPWR_LMT_RU_PAGE_SIZE);
+ 
+ 	addr = R_AX_PWR_RU_LMT;
+-	for (i = 0; i < RTW89_NTX_NUM; i++) {
++	for (i = 0; i < max_ntx_num; i++) {
+ 		rtw89_phy_fill_txpwr_limit_ru(rtwdev, chan, &lmt_ru, i);
+ 
+ 		ptr = (s8 *)&lmt_ru;
+-- 
+2.13.6
+

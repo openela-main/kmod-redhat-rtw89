@@ -1,0 +1,58 @@
+From 937edfd0fa982b99920f180db92a44d7f06ef4b5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:35 +0200
+Subject: [PATCH 101/142] wifi: rtw89: coex: Add version code for Wi-Fi
+ firmware coexistence control
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 72f8b0461b4aa1b90248c36f3d2ea4a58074672e
+Author: Ching-Te Ku <ku920601@realtek.com>
+Date:   Fri Jan 6 20:08:38 2023 +0800
+
+    wifi: rtw89: coex: Add version code for Wi-Fi firmware coexistence control
+
+    The newer Wi-Fi firmware are all changed to "Not to send H2C to
+    mention firmware how many call flow step should firmware trace".
+    The structure had removed the member, and define the steps number
+    at newer version firmware.
+
+    Signed-off-by: Ching-Te Ku <ku920601@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20230106120844.17441-2-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/fw.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/fw.c b/drivers/net/wireless/realtek/rtw89/fw.c
+index 98cfadda8f45e..85c7172e931bf 100644
+--- a/drivers/net/wireless/realtek/rtw89/fw.c
++++ b/drivers/net/wireless/realtek/rtw89/fw.c
+@@ -1992,8 +1992,8 @@ int rtw89_fw_h2c_cxdrv_role_v1(struct rtw89_dev *rtwdev)
+ #define H2C_LEN_CXDRVINFO_CTRL (4 + H2C_LEN_CXDRVHDR)
+ int rtw89_fw_h2c_cxdrv_ctrl(struct rtw89_dev *rtwdev)
+ {
+-	const struct rtw89_chip_info *chip = rtwdev->chip;
+ 	struct rtw89_btc *btc = &rtwdev->btc;
++	const struct rtw89_btc_ver *ver = btc->ver;
+ 	struct rtw89_btc_ctrl *ctrl = &btc->ctrl;
+ 	struct sk_buff *skb;
+ 	u8 *cmd;
+@@ -2013,7 +2013,7 @@ int rtw89_fw_h2c_cxdrv_ctrl(struct rtw89_dev *rtwdev)
+ 	RTW89_SET_FWCMD_CXCTRL_MANUAL(cmd, ctrl->manual);
+ 	RTW89_SET_FWCMD_CXCTRL_IGNORE_BT(cmd, ctrl->igno_bt);
+ 	RTW89_SET_FWCMD_CXCTRL_ALWAYS_FREERUN(cmd, ctrl->always_freerun);
+-	if (chip->chip_id == RTL8852A)
++	if (ver->fcxctrl == 0)
+ 		RTW89_SET_FWCMD_CXCTRL_TRACE_STEP(cmd, ctrl->trace_step);
+ 
+ 	rtw89_h2c_pkt_set_hdr(rtwdev, skb, FWCMD_TYPE_H2C,
+-- 
+2.13.6
+

@@ -1,0 +1,64 @@
+From d7eadb913ff78209ccac0aa347d484478ea2388f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:26 +0200
+Subject: [PATCH 043/142] wifi: rtw89: declare support bands with const
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit a29dba478b6f4e8d3fbfe0b2f097cad1e0b93cf6
+Author: Zong-Zhe Yang <kevin_yang@realtek.com>
+Date:   Thu Oct 20 13:27:01 2022 +0800
+
+    wifi: rtw89: declare support bands with const
+
+    They are just default declarations and we won't modify them directly.
+    Instead, we actually do moification on their memdup now. So, they
+    should be declared with const.
+
+    Signed-off-by: Zong-Zhe Yang <kevin_yang@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20221020052702.33988-1-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
+index ee2214fd92d04..08bcdf5084743 100644
+--- a/drivers/net/wireless/realtek/rtw89/core.c
++++ b/drivers/net/wireless/realtek/rtw89/core.c
+@@ -171,7 +171,7 @@ bool rtw89_ra_report_to_bitrate(struct rtw89_dev *rtwdev, u8 rpt_rate, u16 *bitr
+ 	return true;
+ }
+ 
+-static struct ieee80211_supported_band rtw89_sband_2ghz = {
++static const struct ieee80211_supported_band rtw89_sband_2ghz = {
+ 	.band		= NL80211_BAND_2GHZ,
+ 	.channels	= rtw89_channels_2ghz,
+ 	.n_channels	= ARRAY_SIZE(rtw89_channels_2ghz),
+@@ -181,7 +181,7 @@ static struct ieee80211_supported_band rtw89_sband_2ghz = {
+ 	.vht_cap	= {0},
+ };
+ 
+-static struct ieee80211_supported_band rtw89_sband_5ghz = {
++static const struct ieee80211_supported_band rtw89_sband_5ghz = {
+ 	.band		= NL80211_BAND_5GHZ,
+ 	.channels	= rtw89_channels_5ghz,
+ 	.n_channels	= ARRAY_SIZE(rtw89_channels_5ghz),
+@@ -193,7 +193,7 @@ static struct ieee80211_supported_band rtw89_sband_5ghz = {
+ 	.vht_cap	= {0},
+ };
+ 
+-static struct ieee80211_supported_band rtw89_sband_6ghz = {
++static const struct ieee80211_supported_band rtw89_sband_6ghz = {
+ 	.band		= NL80211_BAND_6GHZ,
+ 	.channels	= rtw89_channels_6ghz,
+ 	.n_channels	= ARRAY_SIZE(rtw89_channels_6ghz),
+-- 
+2.13.6
+

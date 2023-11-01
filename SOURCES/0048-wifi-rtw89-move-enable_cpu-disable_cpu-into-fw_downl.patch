@@ -1,0 +1,101 @@
+From 472c46f9a617348fa8a8ba19dc50e1727c95a58e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:27 +0200
+Subject: [PATCH 048/142] wifi: rtw89: move enable_cpu/disable_cpu into
+ fw_download
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 5f05bdb0a770b5d03d3453c0b0743bb3dcd1a2ba
+Author: Chih-Kang Chang <gary.chang@realtek.com>
+Date:   Thu Oct 27 13:27:02 2022 +0800
+
+    wifi: rtw89: move enable_cpu/disable_cpu into fw_download
+
+    For WoWLAN mode, we need to download WoWLAN firmware by calling
+    fw_download(). Another, to disable/enable WiFi CPU is needed before
+    calling fw_download. Since Firmware runs on WiFi CPU, it is intuitive
+    to combine enable_cpu/disable_cpu functions into fw_download.
+
+    Signed-off-by: Chih-Kang Chang <gary.chang@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20221027052707.14605-3-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/fw.c  |  5 +++++
+ drivers/net/wireless/realtek/rtw89/mac.c | 10 ++--------
+ drivers/net/wireless/realtek/rtw89/mac.h |  2 ++
+ 3 files changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/fw.c b/drivers/net/wireless/realtek/rtw89/fw.c
+index e9f84d43ce0c9..d09d593c1107a 100644
+--- a/drivers/net/wireless/realtek/rtw89/fw.c
++++ b/drivers/net/wireless/realtek/rtw89/fw.c
+@@ -531,6 +531,11 @@ int rtw89_fw_download(struct rtw89_dev *rtwdev, enum rtw89_fw_type type)
+ 	u8 val;
+ 	int ret;
+ 
++	rtw89_mac_disable_cpu(rtwdev);
++	ret = rtw89_mac_enable_cpu(rtwdev, 0, true);
++	if (ret)
++		return ret;
++
+ 	if (!fw || !len) {
+ 		rtw89_err(rtwdev, "fw type %d isn't recognized\n", type);
+ 		return -ENOENT;
+diff --git a/drivers/net/wireless/realtek/rtw89/mac.c b/drivers/net/wireless/realtek/rtw89/mac.c
+index 598568c3f2750..54be8b24e3991 100644
+--- a/drivers/net/wireless/realtek/rtw89/mac.c
++++ b/drivers/net/wireless/realtek/rtw89/mac.c
+@@ -3114,7 +3114,7 @@ static void rtw89_disable_fw_watchdog(struct rtw89_dev *rtwdev)
+ 	rtw89_mac_mem_write(rtwdev, R_AX_WDT_STATUS, val32, RTW89_MAC_MEM_CPU_LOCAL);
+ }
+ 
+-static void rtw89_mac_disable_cpu(struct rtw89_dev *rtwdev)
++void rtw89_mac_disable_cpu(struct rtw89_dev *rtwdev)
+ {
+ 	clear_bit(RTW89_FLAG_FW_RDY, rtwdev->flags);
+ 
+@@ -3129,8 +3129,7 @@ static void rtw89_mac_disable_cpu(struct rtw89_dev *rtwdev)
+ 	rtw89_write32_set(rtwdev, R_AX_PLATFORM_ENABLE, B_AX_PLATFORM_EN);
+ }
+ 
+-static int rtw89_mac_enable_cpu(struct rtw89_dev *rtwdev, u8 boot_reason,
+-				bool dlfw)
++int rtw89_mac_enable_cpu(struct rtw89_dev *rtwdev, u8 boot_reason, bool dlfw)
+ {
+ 	u32 val;
+ 	int ret;
+@@ -3269,11 +3268,6 @@ int rtw89_mac_partial_init(struct rtw89_dev *rtwdev)
+ 			return ret;
+ 	}
+ 
+-	rtw89_mac_disable_cpu(rtwdev);
+-	ret = rtw89_mac_enable_cpu(rtwdev, 0, true);
+-	if (ret)
+-		return ret;
+-
+ 	ret = rtw89_fw_download(rtwdev, RTW89_FW_NORMAL);
+ 	if (ret)
+ 		return ret;
+diff --git a/drivers/net/wireless/realtek/rtw89/mac.h b/drivers/net/wireless/realtek/rtw89/mac.h
+index a6cbafb75a2b8..6e03f5e4ae246 100644
+--- a/drivers/net/wireless/realtek/rtw89/mac.h
++++ b/drivers/net/wireless/realtek/rtw89/mac.h
+@@ -815,6 +815,8 @@ int rtw89_mac_port_update(struct rtw89_dev *rtwdev, struct rtw89_vif *rtwvif);
+ void rtw89_mac_set_he_obss_narrow_bw_ru(struct rtw89_dev *rtwdev,
+ 					struct ieee80211_vif *vif);
+ int rtw89_mac_remove_vif(struct rtw89_dev *rtwdev, struct rtw89_vif *vif);
++void rtw89_mac_disable_cpu(struct rtw89_dev *rtwdev);
++int rtw89_mac_enable_cpu(struct rtw89_dev *rtwdev, u8 boot_reason, bool dlfw);
+ int rtw89_mac_enable_bb_rf(struct rtw89_dev *rtwdev);
+ int rtw89_mac_disable_bb_rf(struct rtw89_dev *rtwdev);
+ 
+-- 
+2.13.6
+

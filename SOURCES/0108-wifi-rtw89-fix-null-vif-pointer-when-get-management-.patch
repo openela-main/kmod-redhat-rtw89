@@ -1,0 +1,48 @@
+From 125d96e892148519e6a4f6acbe4bfc305272b3e3 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:36 +0200
+Subject: [PATCH 108/142] wifi: rtw89: fix null vif pointer when get management
+ frame date rate
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 95dafeabe477d9692154e85140eda5124895ea4f
+Author: Kuan-Chung Chen <damon.chen@realtek.com>
+Date:   Fri Jan 6 20:15:16 2023 +0800
+
+    wifi: rtw89: fix null vif pointer when get management frame date rate
+
+    When transmitting a packet that gets from ieee80211_nullfunc_get(),
+    the vif in tx_info->control was no assigned, which will cause
+    dereferencing a null pointer.
+
+    Signed-off-by: Kuan-Chung Chen <damon.chen@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20230106121517.19841-1-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
+index 2e4ba8e42d392..27f7a1860c9d0 100644
+--- a/drivers/net/wireless/realtek/rtw89/core.c
++++ b/drivers/net/wireless/realtek/rtw89/core.c
+@@ -498,7 +498,8 @@ static u16 rtw89_core_get_mgmt_rate(struct rtw89_dev *rtwdev,
+ 	const struct rtw89_chan *chan = rtw89_chan_get(rtwdev, RTW89_SUB_ENTITY_0);
+ 	u16 lowest_rate;
+ 
+-	if (tx_info->flags & IEEE80211_TX_CTL_NO_CCK_RATE || vif->p2p)
++	if (tx_info->flags & IEEE80211_TX_CTL_NO_CCK_RATE ||
++	    (vif && vif->p2p))
+ 		lowest_rate = RTW89_HW_RATE_OFDM6;
+ 	else if (chan->band_type == RTW89_BAND_2G)
+ 		lowest_rate = RTW89_HW_RATE_CCK1;
+-- 
+2.13.6
+

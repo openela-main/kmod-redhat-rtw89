@@ -1,0 +1,18 @@
+Index: src/drivers/net/wireless/realtek/rtw89/rtw8852a.c
+===================================================================
+--- src.orig/drivers/net/wireless/realtek/rtw89/rtw8852a.c	2023-05-30 10:29:13.216623327 +0200
++++ src/drivers/net/wireless/realtek/rtw89/rtw8852a.c	2023-05-30 10:31:38.065414604 +0200
+@@ -2152,3 +2152,4 @@
+ MODULE_AUTHOR("Realtek Corporation");
+ MODULE_DESCRIPTION("Realtek 802.11ax wireless 8852A driver");
+ MODULE_LICENSE("Dual BSD/GPL");
++MODULE_VERSION("5.14.0_284.11.1_dup9.2");
+Index: src/drivers/net/wireless/realtek/rtw89/rtw8852ae.c
+===================================================================
+--- src.orig/drivers/net/wireless/realtek/rtw89/rtw8852ae.c	2023-05-30 10:29:13.025624920 +0200
++++ src/drivers/net/wireless/realtek/rtw89/rtw8852ae.c	2023-05-30 10:35:33.298468483 +0200
+@@ -86,3 +86,4 @@
+ MODULE_AUTHOR("Realtek Corporation");
+ MODULE_DESCRIPTION("Realtek 802.11ax wireless 8852AE driver");
+ MODULE_LICENSE("Dual BSD/GPL");
++MODULE_VERSION("5.14.0_284.11.1_dup9.2");

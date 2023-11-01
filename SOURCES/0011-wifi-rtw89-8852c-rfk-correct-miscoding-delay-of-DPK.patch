@@ -1,0 +1,45 @@
+From 7e4a7fc82e2bcd305444cbf6ab3f5af6546ca0b6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:22 +0200
+Subject: [PATCH 011/142] wifi: rtw89: 8852c: rfk: correct miscoding delay of
+ DPK
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 3be11416204a7aecbdba8c843849f204c631b8e6
+Author: Ping-Ke Shih <pkshih@realtek.com>
+Date:   Fri Sep 30 21:33:18 2022 +0800
+
+    wifi: rtw89: 8852c: rfk: correct miscoding delay of DPK
+
+    Using mdelay() can work well, but calibration causes too much time. Use
+    proper udelay() to get shorter time and the same result.
+
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20220930133318.6335-2-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/rtw8852c_rfk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/rtw8852c_rfk.c b/drivers/net/wireless/realtek/rtw89/rtw8852c_rfk.c
+index 1e67a565a9e0c..b0672b906e7bc 100644
+--- a/drivers/net/wireless/realtek/rtw89/rtw8852c_rfk.c
++++ b/drivers/net/wireless/realtek/rtw89/rtw8852c_rfk.c
+@@ -1666,7 +1666,7 @@ static u8 _dpk_one_shot(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy,
+ 
+ 	ret = read_poll_timeout_atomic(rtw89_phy_read32_mask, val, val == 0x55,
+ 				       10, 20000, false, rtwdev, 0xbff8, MASKBYTE0);
+-	mdelay(10);
++	udelay(10);
+ 	rtw89_phy_write32_clr(rtwdev, R_NCTL_N1, MASKBYTE0);
+ 
+ 	rtw89_debug(rtwdev, RTW89_DBG_RFK,
+-- 
+2.13.6
+

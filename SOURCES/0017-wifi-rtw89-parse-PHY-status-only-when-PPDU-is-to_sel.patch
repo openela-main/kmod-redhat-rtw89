@@ -1,0 +1,48 @@
+From 84c69de904c9c595ca903b373aac9dea6f93dcb6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:23 +0200
+Subject: [PATCH 017/142] wifi: rtw89: parse PHY status only when PPDU is
+ to_self
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 0935bb1527d711b1af8e89d4ba200c302fb5ab2b
+Author: Eric Huang <echuang@realtek.com>
+Date:   Wed Oct 5 16:32:08 2022 +0800
+
+    wifi: rtw89: parse PHY status only when PPDU is to_self
+
+    Without this fix, some non-self packets are used to count CFO (center
+    frequency offset), and average CFO has unstable variation. Then, it causes
+    unexpected performance.
+
+    Signed-off-by: Eric Huang <echuang@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20221005083212.45683-3-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/core.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
+index a703bb70b8f55..ee2214fd92d04 100644
+--- a/drivers/net/wireless/realtek/rtw89/core.c
++++ b/drivers/net/wireless/realtek/rtw89/core.c
+@@ -1255,6 +1255,9 @@ static int rtw89_core_rx_parse_phy_sts(struct rtw89_dev *rtwdev,
+ 	if (phy_ppdu->ie < RTW89_CCK_PKT)
+ 		return -EINVAL;
+ 
++	if (!phy_ppdu->to_self)
++		return 0;
++
+ 	pos = (u8 *)phy_ppdu->buf + PHY_STS_HDR_LEN;
+ 	end = (u8 *)phy_ppdu->buf + phy_ppdu->len;
+ 	while (pos < end) {
+-- 
+2.13.6
+

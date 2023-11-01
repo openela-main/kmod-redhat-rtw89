@@ -1,0 +1,45 @@
+From 33f37d7827e0d87a8680566bcc3fd6f217761944 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:24 +0200
+Subject: [PATCH 023/142] wifi: rtw89: fix wrong bandwidth settings after scan
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 478132050360a5cf19cc1b3fc9fcf1e56a483481
+Author: Po-Hao Huang <phhuang@realtek.com>
+Date:   Fri Oct 7 12:59:00 2022 +0800
+
+    wifi: rtw89: fix wrong bandwidth settings after scan
+
+    Set channel in driver side to configure Tx power and channel index
+    correctly after scan. Before this, beacons with bandwidth larger than
+    20M bandwidth will be dropped by mac80211 due to frequency mismatch.
+
+    Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20221007045900.10823-2-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/fw.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/fw.c b/drivers/net/wireless/realtek/rtw89/fw.c
+index dd2dc842681eb..d3500a70af4dd 100644
+--- a/drivers/net/wireless/realtek/rtw89/fw.c
++++ b/drivers/net/wireless/realtek/rtw89/fw.c
+@@ -2775,6 +2775,7 @@ void rtw89_hw_scan_complete(struct rtw89_dev *rtwdev, struct ieee80211_vif *vif,
+ 
+ 	if (rtwvif->net_type != RTW89_NET_TYPE_NO_LINK)
+ 		rtw89_store_op_chan(rtwdev, false);
++	rtw89_set_channel(rtwdev);
+ }
+ 
+ void rtw89_hw_scan_abort(struct rtw89_dev *rtwdev, struct ieee80211_vif *vif)
+-- 
+2.13.6
+

@@ -1,0 +1,52 @@
+From dc93a468c0aed51fde75346bbffc07f5ce74ee2a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:32 +0200
+Subject: [PATCH 076/142] wifi: rtw89: fix unsuccessful interface_add flow
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 8fc5d4338620b81b1b265c725b38aced8acf8d72
+Author: Po-Hao Huang <phhuang@realtek.com>
+Date:   Fri Dec 2 14:15:26 2022 +0800
+
+    wifi: rtw89: fix unsuccessful interface_add flow
+
+    Remove according vifs from list if we couldn't set this interface up.
+    Otherwise the rtwvif_list could contain unreferenced objects.
+
+    Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20221202061527.505668-4-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/mac80211.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/mac80211.c b/drivers/net/wireless/realtek/rtw89/mac80211.c
+index 0c86d416b7ad2..f9b95c52916bb 100644
+--- a/drivers/net/wireless/realtek/rtw89/mac80211.c
++++ b/drivers/net/wireless/realtek/rtw89/mac80211.c
+@@ -125,6 +125,7 @@ static int rtw89_ops_add_interface(struct ieee80211_hw *hw,
+ 						  RTW89_PORT_NUM);
+ 	if (rtwvif->port == RTW89_PORT_NUM) {
+ 		ret = -ENOSPC;
++		list_del_init(&rtwvif->list);
+ 		goto out;
+ 	}
+ 
+@@ -138,6 +139,7 @@ static int rtw89_ops_add_interface(struct ieee80211_hw *hw,
+ 	ret = rtw89_mac_add_vif(rtwdev, rtwvif);
+ 	if (ret) {
+ 		rtw89_core_release_bit_map(rtwdev->hw_port, rtwvif->port);
++		list_del_init(&rtwvif->list);
+ 		goto out;
+ 	}
+ 
+-- 
+2.13.6
+

@@ -1,0 +1,69 @@
+From 22f342a028752f58ff012e1688a12d2c02665092 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:34 +0200
+Subject: [PATCH 091/142] wifi: rtw89: refine 6 GHz scanning dwell time
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 08c93c0ca74c4223dce8fb68e4bb24f7426e55c8
+Author: Po-Hao Huang <phhuang@realtek.com>
+Date:   Wed Dec 14 17:19:52 2022 +0800
+
+    wifi: rtw89: refine 6 GHz scanning dwell time
+
+    Reduce dwell time to improve scan duration in 6 GHz. This is required
+    for scan requests that does not include RNR parsing and does full
+    channel scan.
+
+    Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20221214091952.42792-1-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/fw.c | 5 +++--
+ drivers/net/wireless/realtek/rtw89/fw.h | 1 +
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/fw.c b/drivers/net/wireless/realtek/rtw89/fw.c
+index ecf68912eac2a..466d8273bc2b1 100644
+--- a/drivers/net/wireless/realtek/rtw89/fw.c
++++ b/drivers/net/wireless/realtek/rtw89/fw.c
+@@ -2751,7 +2751,7 @@ static void rtw89_hw_scan_add_chan(struct rtw89_dev *rtwdev, int chan_type,
+ 		if (ssid_num == 1 && req->ssids[0].ssid_len == 0) {
+ 			ch_info->tx_pkt = false;
+ 			if (!req->duration_mandatory)
+-				ch_info->period -= RTW89_DWELL_TIME;
++				ch_info->period -= RTW89_DWELL_TIME_6G;
+ 		}
+ 	}
+ 
+@@ -2804,7 +2804,8 @@ static int rtw89_hw_scan_add_chan_list(struct rtw89_dev *rtwdev,
+ 		if (req->duration_mandatory)
+ 			ch_info->period = req->duration;
+ 		else if (channel->band == NL80211_BAND_6GHZ)
+-			ch_info->period = RTW89_CHANNEL_TIME_6G + RTW89_DWELL_TIME;
++			ch_info->period = RTW89_CHANNEL_TIME_6G +
++					  RTW89_DWELL_TIME_6G;
+ 		else
+ 			ch_info->period = RTW89_CHANNEL_TIME;
+ 
+diff --git a/drivers/net/wireless/realtek/rtw89/fw.h b/drivers/net/wireless/realtek/rtw89/fw.h
+index 4326e0ede54b8..3ce59ac48f433 100644
+--- a/drivers/net/wireless/realtek/rtw89/fw.h
++++ b/drivers/net/wireless/realtek/rtw89/fw.h
+@@ -205,6 +205,7 @@ struct rtw89_h2creg_sch_tx_en {
+ #define RTW89_DFS_CHAN_TIME 105
+ #define RTW89_OFF_CHAN_TIME 100
+ #define RTW89_DWELL_TIME 20
++#define RTW89_DWELL_TIME_6G 10
+ #define RTW89_SCAN_WIDTH 0
+ #define RTW89_SCANOFLD_MAX_SSID 8
+ #define RTW89_SCANOFLD_MAX_IE_LEN 512
+-- 
+2.13.6
+

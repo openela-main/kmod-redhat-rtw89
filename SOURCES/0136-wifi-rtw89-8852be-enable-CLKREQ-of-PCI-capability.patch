@@ -1,0 +1,44 @@
+From a45f5e86d7bdf1ec96c04dcd2435869a6742da87 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:40 +0200
+Subject: [PATCH 136/142] wifi: rtw89: 8852be: enable CLKREQ of PCI capability
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 3712888e3dba5df2b4f3fb3ba87e20bac6afc7c0
+Author: Chin-Yen Lee <timlee@realtek.com>
+Date:   Thu Jan 26 19:27:15 2023 +0800
+
+    wifi: rtw89: 8852be: enable CLKREQ of PCI capability
+
+    Enable CLKREQ to reduce power consumption for 8852BE.
+
+    Signed-off-by: Chin-Yen Lee <timlee@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20230126112715.5811-1-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/pci.c b/drivers/net/wireless/realtek/rtw89/pci.c
+index 0ea734c81b4f0..ec8bb5f10482e 100644
+--- a/drivers/net/wireless/realtek/rtw89/pci.c
++++ b/drivers/net/wireless/realtek/rtw89/pci.c
+@@ -3398,7 +3398,7 @@ static void rtw89_pci_clkreq_set(struct rtw89_dev *rtwdev, bool enable)
+ 	if (ret)
+ 		rtw89_err(rtwdev, "failed to set CLKREQ Delay\n");
+ 
+-	if (chip_id == RTL8852A) {
++	if (chip_id == RTL8852A || chip_id == RTL8852B) {
+ 		if (enable)
+ 			ret = rtw89_pci_config_byte_set(rtwdev,
+ 							RTW89_PCIE_L1_CTRL,
+-- 
+2.13.6
+

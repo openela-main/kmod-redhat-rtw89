@@ -1,0 +1,44 @@
+From 5e98cd761aa9768498e7364d74df9287e9917d18 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:34 +0200
+Subject: [PATCH 093/142] wifi: rtw89: Fix a typo in debug message
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit e20c9f656654f74c9234e6cd3231aed72f53d246
+Author: Masanari Iida <standby24x7@gmail.com>
+Date:   Fri Dec 23 19:20:58 2022 +0900
+
+    wifi: rtw89: Fix a typo in debug message
+
+    This patch fixes a spelling typo in debug message.
+
+    Signed-off-by: Masanari Iida <standby24x7@gmail.com>
+    Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20221223102058.162179-1-standby24x7@gmail.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/rtw8852a_rfk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/rtw8852a_rfk.c b/drivers/net/wireless/realtek/rtw89/rtw8852a_rfk.c
+index 582ff0d3a9ea0..cd6c39b7f8025 100644
+--- a/drivers/net/wireless/realtek/rtw89/rtw8852a_rfk.c
++++ b/drivers/net/wireless/realtek/rtw89/rtw8852a_rfk.c
+@@ -1643,7 +1643,7 @@ static void _doiqk(struct rtw89_dev *rtwdev, bool force,
+ 	rtw89_btc_ntfy_wl_rfk(rtwdev, phy_map, BTC_WRFKT_IQK, BTC_WRFK_ONESHOT_START);
+ 
+ 	rtw89_debug(rtwdev, RTW89_DBG_RFK,
+-		    "[IQK]==========IQK strat!!!!!==========\n");
++		    "[IQK]==========IQK start!!!!!==========\n");
+ 	iqk_info->iqk_times++;
+ 	iqk_info->kcount = 0;
+ 	iqk_info->version = RTW8852A_IQK_VER;
+-- 
+2.13.6
+
