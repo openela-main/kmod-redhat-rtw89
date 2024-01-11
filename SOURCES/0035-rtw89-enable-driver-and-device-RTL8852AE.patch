@@ -1,0 +1,38 @@
+From 067322075a8cdb1e466da71f7d7560062591ed54 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Fri, 21 Jan 2022 08:49:04 +0100
+Subject: [PATCH 35/36] rtw89: enable driver and device RTL8852AE
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: http://bugzilla.redhat.com/2033291
+Upstream-status: Posted https://gitlab.com/cki-project/kernel-ark/-/merge_requests/1570
+
+Enable new driver rtw89 and device RTL8852AE
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ redhat/configs/generic/CONFIG_RTW89        | 1 +
+ redhat/configs/generic/CONFIG_RTW89_8852AE | 1 +
+ 2 files changed, 2 insertions(+)
+ create mode 100644 redhat/configs/generic/CONFIG_RTW89
+ create mode 100644 redhat/configs/generic/CONFIG_RTW89_8852AE
+
+diff --git a/redhat/configs/generic/CONFIG_RTW89 b/redhat/configs/generic/CONFIG_RTW89
+new file mode 100644
+index 000000000000..48f9cf9f73e3
+--- /dev/null
++++ b/redhat/configs/generic/CONFIG_RTW89
+@@ -0,0 +1 @@
++CONFIG_RTW89=m
+diff --git a/redhat/configs/generic/CONFIG_RTW89_8852AE b/redhat/configs/generic/CONFIG_RTW89_8852AE
+new file mode 100644
+index 000000000000..d8ef20a039eb
+--- /dev/null
++++ b/redhat/configs/generic/CONFIG_RTW89_8852AE
+@@ -0,0 +1 @@
++CONFIG_RTW89_8852AE=m
+-- 
+2.13.6
+
