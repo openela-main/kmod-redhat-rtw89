@@ -1,0 +1,93 @@
+From facc5c5a95613e256dac7e121532ebc8d0278e8f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:26 +0200
+Subject: [PATCH 039/142] wifi: rtw89: 8852b: add chip_ops related to RF
+ calibration
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit ef8acbcac6816e4caf20934932b4881d775c6f37
+Author: Ping-Ke Shih <pkshih@realtek.com>
+Date:   Fri Oct 14 14:02:35 2022 +0800
+
+    wifi: rtw89: 8852b: add chip_ops related to RF calibration
+
+    Since RF calibrations are added, add chip_ops to call them. These chip_ops
+    include initial, full calibration, configuration when switching band and
+    scanning, and track work in period of 2 seconds.
+
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20221014060237.29050-3-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/rtw8852b.c | 42 +++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/rtw8852b.c b/drivers/net/wireless/realtek/rtw89/rtw8852b.c
+index 0918b75ab1d94..0df044b1c392a 100644
+--- a/drivers/net/wireless/realtek/rtw89/rtw8852b.c
++++ b/drivers/net/wireless/realtek/rtw89/rtw8852b.c
+@@ -1513,6 +1513,43 @@ static void rtw8852b_set_channel_help(struct rtw89_dev *rtwdev, bool enter,
+ 	}
+ }
+ 
++static void rtw8852b_rfk_init(struct rtw89_dev *rtwdev)
++{
++	rtwdev->is_tssi_mode[RF_PATH_A] = false;
++	rtwdev->is_tssi_mode[RF_PATH_B] = false;
++
++	rtw8852b_dpk_init(rtwdev);
++	rtw8852b_rck(rtwdev);
++	rtw8852b_dack(rtwdev);
++	rtw8852b_rx_dck(rtwdev, RTW89_PHY_0);
++}
++
++static void rtw8852b_rfk_channel(struct rtw89_dev *rtwdev)
++{
++	enum rtw89_phy_idx phy_idx = RTW89_PHY_0;
++
++	rtw8852b_rx_dck(rtwdev, phy_idx);
++	rtw8852b_iqk(rtwdev, phy_idx);
++	rtw8852b_tssi(rtwdev, phy_idx, true);
++	rtw8852b_dpk(rtwdev, phy_idx);
++}
++
++static void rtw8852b_rfk_band_changed(struct rtw89_dev *rtwdev,
++				      enum rtw89_phy_idx phy_idx)
++{
++	rtw8852b_tssi_scan(rtwdev, phy_idx);
++}
++
++static void rtw8852b_rfk_scan(struct rtw89_dev *rtwdev, bool start)
++{
++	rtw8852b_wifi_scan_notify(rtwdev, start, RTW89_PHY_0);
++}
++
++static void rtw8852b_rfk_track(struct rtw89_dev *rtwdev)
++{
++	rtw8852b_dpk_track(rtwdev);
++}
++
+ static u32 rtw8852b_bb_cal_txpwr_ref(struct rtw89_dev *rtwdev,
+ 				     enum rtw89_phy_idx phy_idx, s16 ref)
+ {
+@@ -2346,6 +2383,11 @@ static const struct rtw89_chip_ops rtw8852b_chip_ops = {
+ 	.read_efuse		= rtw8852b_read_efuse,
+ 	.read_phycap		= rtw8852b_read_phycap,
+ 	.fem_setup		= NULL,
++	.rfk_init		= rtw8852b_rfk_init,
++	.rfk_channel		= rtw8852b_rfk_channel,
++	.rfk_band_changed	= rtw8852b_rfk_band_changed,
++	.rfk_scan		= rtw8852b_rfk_scan,
++	.rfk_track		= rtw8852b_rfk_track,
+ 	.power_trim		= rtw8852b_power_trim,
+ 	.set_txpwr		= rtw8852b_set_txpwr,
+ 	.set_txpwr_ctrl		= rtw8852b_set_txpwr_ctrl,
+-- 
+2.13.6
+

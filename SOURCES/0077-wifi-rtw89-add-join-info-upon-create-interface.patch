@@ -1,0 +1,47 @@
+From 8f22795cdfed6df6fa0533e3c2042533e63e46da Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:32 +0200
+Subject: [PATCH 077/142] wifi: rtw89: add join info upon create interface
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit a0e78d5c6082fc953fef5af7293be0145c67dba4
+Author: Po-Hao Huang <phhuang@realtek.com>
+Date:   Fri Dec 2 14:15:27 2022 +0800
+
+    wifi: rtw89: add join info upon create interface
+
+    To support multiple vifs, fw need more information of each role.
+    Send this info to make things work as expected.
+
+    Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20221202061527.505668-5-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/mac.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/mac.c b/drivers/net/wireless/realtek/rtw89/mac.c
+index 12cbf41590bbe..cf9a0a3120a79 100644
+--- a/drivers/net/wireless/realtek/rtw89/mac.c
++++ b/drivers/net/wireless/realtek/rtw89/mac.c
+@@ -3980,6 +3980,10 @@ int rtw89_mac_vif_init(struct rtw89_dev *rtwdev, struct rtw89_vif *rtwvif)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = rtw89_fw_h2c_join_info(rtwdev, rtwvif, NULL, true);
++	if (ret)
++		return ret;
++
+ 	ret = rtw89_cam_init(rtwdev, rtwvif);
+ 	if (ret)
+ 		return ret;
+-- 
+2.13.6
+

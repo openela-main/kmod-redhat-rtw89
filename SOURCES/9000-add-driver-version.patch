@@ -1,0 +1,36 @@
+Index: src/drivers/net/wireless/realtek/rtw89/core.c
+===================================================================
+--- src.orig/drivers/net/wireless/realtek/rtw89/core.c	2023-05-30 10:16:49.910826005 +0200
++++ src/drivers/net/wireless/realtek/rtw89/core.c	2023-05-30 10:24:44.602864833 +0200
+@@ -3510,3 +3510,4 @@
+ MODULE_AUTHOR("Realtek Corporation");
+ MODULE_DESCRIPTION("Realtek 802.11ax wireless core module");
+ MODULE_LICENSE("Dual BSD/GPL");
++MODULE_VERSION("5.14.0_284.11.1_dup9.2");
+Index: src/drivers/net/wireless/realtek/rtw89/pci.c
+===================================================================
+--- src.orig/drivers/net/wireless/realtek/rtw89/pci.c	2023-05-30 10:16:49.862826406 +0200
++++ src/drivers/net/wireless/realtek/rtw89/pci.c	2023-05-30 10:24:55.391774803 +0200
+@@ -3926,3 +3926,4 @@
+ MODULE_AUTHOR("Realtek Corporation");
+ MODULE_DESCRIPTION("Realtek 802.11ax wireless PCI driver");
+ MODULE_LICENSE("Dual BSD/GPL");
++MODULE_VERSION("5.14.0_284.11.1_dup9.2");
+Index: src/drivers/net/wireless/realtek/rtw89/rtw8852b.c
+===================================================================
+--- src.orig/drivers/net/wireless/realtek/rtw89/rtw8852b.c	2023-05-30 10:16:49.878826272 +0200
++++ src/drivers/net/wireless/realtek/rtw89/rtw8852b.c	2023-05-30 10:24:22.393050168 +0200
+@@ -2526,3 +2526,4 @@
+ MODULE_AUTHOR("Realtek Corporation");
+ MODULE_DESCRIPTION("Realtek 802.11ax wireless 8852B driver");
+ MODULE_LICENSE("Dual BSD/GPL");
++MODULE_VERSION("5.14.0_284.11.1_dup9.2");
+Index: src/drivers/net/wireless/realtek/rtw89/rtw8852be.c
+===================================================================
+--- src.orig/drivers/net/wireless/realtek/rtw89/rtw8852be.c	2023-05-30 10:16:49.662828075 +0200
++++ src/drivers/net/wireless/realtek/rtw89/rtw8852be.c	2023-05-30 10:24:30.895979213 +0200
+@@ -88,3 +88,4 @@
+ MODULE_AUTHOR("Realtek Corporation");
+ MODULE_DESCRIPTION("Realtek 802.11ax wireless 8852BE driver");
+ MODULE_LICENSE("Dual BSD/GPL");
++MODULE_VERSION("5.14.0_284.11.1_dup9.2");

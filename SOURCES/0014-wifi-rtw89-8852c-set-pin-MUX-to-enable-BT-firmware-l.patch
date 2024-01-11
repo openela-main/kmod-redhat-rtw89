@@ -1,0 +1,62 @@
+From 411927dca0d2432a83160930fc016d27c4b205b2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:23 +0200
+Subject: [PATCH 014/142] wifi: rtw89: 8852c: set pin MUX to enable BT firmware
+ log
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit d187691ab63f53f199a07904422e0911bc6f9390
+Author: Ping-Ke Shih <pkshih@realtek.com>
+Date:   Fri Sep 30 21:44:16 2022 +0800
+
+    wifi: rtw89: 8852c: set pin MUX to enable BT firmware log
+
+    8852CE is a combo chip, and WiFi driver controls pin MUX. To output BT
+    firmware log to specific hardware pin, set pin MUX to achieve.
+
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20220930134417.10282-1-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/reg.h      | 4 ++++
+ drivers/net/wireless/realtek/rtw89/rtw8852c.c | 3 +++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/reg.h b/drivers/net/wireless/realtek/rtw89/reg.h
+index 6809ff812abb7..874cca85eaadf 100644
+--- a/drivers/net/wireless/realtek/rtw89/reg.h
++++ b/drivers/net/wireless/realtek/rtw89/reg.h
+@@ -229,6 +229,10 @@
+ 
+ #define R_AX_GPIO0_7_FUNC_SEL 0x02D0
+ 
++#define R_AX_LED1_FUNC_SEL 0x02DC
++#define B_AX_PINMUX_EESK_FUNC_SEL_V1_MASK GENMASK(27, 24)
++#define PINMUX_EESK_FUNC_SEL_BT_LOG 0x1
++
+ #define R_AX_GPIO0_15_EECS_EESK_LED1_PULL_LOW_EN 0x02E4
+ #define B_AX_LED1_PULL_LOW_EN BIT(18)
+ #define B_AX_EESK_PULL_LOW_EN BIT(17)
+diff --git a/drivers/net/wireless/realtek/rtw89/rtw8852c.c b/drivers/net/wireless/realtek/rtw89/rtw8852c.c
+index a6a9fe3d0b565..a5bcd3fcecb71 100644
+--- a/drivers/net/wireless/realtek/rtw89/rtw8852c.c
++++ b/drivers/net/wireless/realtek/rtw89/rtw8852c.c
+@@ -273,6 +273,9 @@ static int rtw8852c_pwr_on_func(struct rtw89_dev *rtwdev)
+ 			  B_AX_CMAC_DMA_EN | B_AX_PTCLTOP_EN | B_AX_SCHEDULER_EN |
+ 			  B_AX_TMAC_EN | B_AX_RMAC_EN);
+ 
++	rtw89_write32_mask(rtwdev, R_AX_LED1_FUNC_SEL, B_AX_PINMUX_EESK_FUNC_SEL_V1_MASK,
++			   PINMUX_EESK_FUNC_SEL_BT_LOG);
++
+ 	return 0;
+ }
+ 
+-- 
+2.13.6
+

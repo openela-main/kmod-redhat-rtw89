@@ -1,0 +1,65 @@
+From 58994c76089440e2b4b4c24c565fcb6a2fa16ef8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:30 +0200
+Subject: [PATCH 063/142] wifi: rtw89: enable mac80211 virtual monitor
+ interface
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit cd9b6b3baf5278c73c91e242d41387684fc7f8d8
+Author: Zong-Zhe Yang <kevin_yang@realtek.com>
+Date:   Fri Nov 25 15:24:14 2022 +0800
+
+    wifi: rtw89: enable mac80211 virtual monitor interface
+
+    For running with mac80211 channel context ops and using only as monitor,
+    we need to enable WANT_MONITOR_VIF to let mac80211 process virtual monitor
+    interface. Then, we are able to set channel on the monitor from user space.
+
+    Signed-off-by: Zong-Zhe Yang <kevin_yang@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20221125072416.94752-2-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/core.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
+index 2ea38376bd2bb..2db9eb6556565 100644
+--- a/drivers/net/wireless/realtek/rtw89/core.c
++++ b/drivers/net/wireless/realtek/rtw89/core.c
+@@ -1405,6 +1405,9 @@ static void rtw89_vif_rx_stats_iter(void *data, u8 *mac,
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
+ 	const u8 *bssid = iter_data->bssid;
+ 
++	if (!vif->bss_conf.bssid)
++		return;
++
+ 	if (ieee80211_is_trigger(hdr->frame_control)) {
+ 		rtw89_stats_trigger_frame(rtwdev, vif, skb);
+ 		return;
+@@ -2386,6 +2389,8 @@ void rtw89_vif_type_mapping(struct ieee80211_vif *vif, bool assoc)
+ 		rtwvif->self_role = RTW89_SELF_ROLE_CLIENT;
+ 		rtwvif->addr_cam.sec_ent_mode = RTW89_ADDR_CAM_SEC_NORMAL;
+ 		break;
++	case NL80211_IFTYPE_MONITOR:
++		break;
+ 	default:
+ 		WARN_ON(1);
+ 		break;
+@@ -3269,6 +3274,7 @@ static int rtw89_core_register_hw(struct rtw89_dev *rtwdev)
+ 	ieee80211_hw_set(hw, SUPPORTS_DYNAMIC_PS);
+ 	ieee80211_hw_set(hw, SINGLE_SCAN_ON_ALL_BANDS);
+ 	ieee80211_hw_set(hw, SUPPORTS_MULTI_BSSID);
++	ieee80211_hw_set(hw, WANT_MONITOR_VIF);
+ 
+ 	hw->wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION) |
+ 				     BIT(NL80211_IFTYPE_AP) |
+-- 
+2.13.6
+

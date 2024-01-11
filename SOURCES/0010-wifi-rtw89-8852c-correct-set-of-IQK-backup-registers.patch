@@ -1,0 +1,48 @@
+From 956f19cd6c44e5f95bd8dd3d98f09f32b785d157 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:22 +0200
+Subject: [PATCH 010/142] wifi: rtw89: 8852c: correct set of IQK backup
+ registers
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 68b0ce5bb4002cd657963cb876f0ff51729f9bfc
+Author: Ping-Ke Shih <pkshih@realtek.com>
+Date:   Fri Sep 30 21:33:17 2022 +0800
+
+    wifi: rtw89: 8852c: correct set of IQK backup registers
+
+    IQK can change the values of this register set, so need to backup and
+    restore the values. During we rewrite IQK, the policy is changed. Some
+    values are controlled and filled by IQK, and don't need to restore after
+    IQK. Therefore, remove this kind of registers from this array.
+
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20220930133318.6335-1-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/rtw8852c_rfk.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/rtw8852c_rfk.c b/drivers/net/wireless/realtek/rtw89/rtw8852c_rfk.c
+index 006c2cf931116..1e67a565a9e0c 100644
+--- a/drivers/net/wireless/realtek/rtw89/rtw8852c_rfk.c
++++ b/drivers/net/wireless/realtek/rtw89/rtw8852c_rfk.c
+@@ -22,8 +22,7 @@ static const u32 _tssi_de_mcs_5m[RF_PATH_NUM_8852C] = {0x5828, 0x7828};
+ static const u32 _tssi_de_mcs_10m[RF_PATH_NUM_8852C] = {0x5830, 0x7830};
+ 
+ static const u32 rtw8852c_backup_bb_regs[] = {
+-	0x813c, 0x8124, 0x8120, 0xc0d4, 0xc0d8, 0xc0e8, 0x823c, 0x8224, 0x8220,
+-	0xc1d4, 0xc1d8, 0xc1e8
++	0x8120, 0xc0d4, 0xc0d8, 0xc0e8, 0x8220, 0xc1d4, 0xc1d8, 0xc1e8
+ };
+ 
+ static const u32 rtw8852c_backup_rf_regs[] = {
+-- 
+2.13.6
+

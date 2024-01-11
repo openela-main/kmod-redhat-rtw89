@@ -1,0 +1,13 @@
+Index: src/drivers/net/wireless/realtek/rtw89/Makefile
+===================================================================
+--- src.orig/drivers/net/wireless/realtek/rtw89/Makefile	2023-05-30 10:16:49.146832381 +0200
++++ src/drivers/net/wireless/realtek/rtw89/Makefile	2023-05-30 10:23:05.287693590 +0200
+@@ -1,5 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+ 
++CONFIG_RTW89_8852B := m
++CONFIG_RTW89_8852BE := m
++
+ obj-$(CONFIG_RTW89_CORE) += rtw89_core.o
+ rtw89_core-y += core.o \
+ 		mac80211.o \

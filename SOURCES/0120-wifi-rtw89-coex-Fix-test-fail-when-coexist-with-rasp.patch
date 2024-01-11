@@ -1,0 +1,50 @@
+From 16bf91a80cdf7a47936fa053ae51b480934c716b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Wed, 24 May 2023 15:00:38 +0200
+Subject: [PATCH 120/142] wifi: rtw89: coex: Fix test fail when coexist with
+ raspberryPI A2DP idle
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bugzilla: https://bugzilla.redhat.com/2207499
+
+commit 4b3e7e813bba53402af13ecd5343ac9667ca7608
+Author: Ching-Te Ku <ku920601@realtek.com>
+Date:   Tue Jan 17 19:41:08 2023 +0800
+
+    wifi: rtw89: coex: Fix test fail when coexist with raspberryPI A2DP idle
+
+    The origin code will enable TDMA WL:BT = 50:50 to prevent Wi-Fi
+    throughput suddenly drop to 0 in the moment while A2DP pause.
+    And this protection just a short moment, and will turn to Bluetooth
+    idle case when A2DP turn into sniff mode. But the raspberryPI simulated
+    A2DP device will not turn into sniff mode. So the protection will bring
+    the throughput drop.
+
+    Signed-off-by: Ching-Te Ku <ku920601@realtek.com>
+    Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+    Signed-off-by: Kalle Valo <kvalo@kernel.org>
+    Link: https://lore.kernel.org/r/20230117114109.4298-8-pkshih@realtek.com
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/wireless/realtek/rtw89/coex.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw89/coex.c b/drivers/net/wireless/realtek/rtw89/coex.c
+index c0e8a0b2e0b75..89214f2db9851 100644
+--- a/drivers/net/wireless/realtek/rtw89/coex.c
++++ b/drivers/net/wireless/realtek/rtw89/coex.c
+@@ -3847,7 +3847,7 @@ static void _action_by_bt(struct rtw89_dev *rtwdev)
+ 	case BTC_BT_NOPROFILE:
+ 		if (_check_freerun(rtwdev))
+ 			_action_freerun(rtwdev);
+-		else if (a2dp.active || pan.active)
++		else if (pan.active)
+ 			_action_bt_pan(rtwdev);
+ 		else
+ 			_action_bt_idle(rtwdev);
+-- 
+2.13.6
+
